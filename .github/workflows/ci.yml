@@ -35,7 +35,7 @@ jobs:
 
       - name: Generate Synthetic Pipeline Fixtures
         run: |
-          fraudguard generate-synthetic --rows 500 --days 2 --fraud-rate 0.05 --output data/raw/train_transaction.csv
+          fraudguard generate-synthetic --rows 5000 --days 5 --fraud-rate 0.035 --output data/raw/train_transaction.csv
           fraudguard split --input data/raw/train_transaction.csv --output-dir data/processed
           fraudguard train --models prior amount logistic --output-dir artifacts/baselines
           fraudguard tune --output-dir artifacts/selection --comparison-report reports/development_model_comparison.csv
