@@ -255,7 +255,11 @@ def build_and_save_split_manifest(
     # Generate Development EDA report (strictly development partition only)
     dev_indices = partitions["development"].indices
     dev_df = filtered_df.iloc[dev_indices]
-    eda_path = "reports/development_eda.md" if str(output_dir) == "data/processed" else str(out_dir / "development_eda.md")
+    eda_path = (
+        "reports/development_eda.md"
+        if str(output_dir) == "data/processed"
+        else str(out_dir / "development_eda.md")
+    )
     generate_development_eda_report(dev_df, output_path=eda_path)
 
     return manifest_data
