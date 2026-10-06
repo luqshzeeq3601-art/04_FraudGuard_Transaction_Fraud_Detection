@@ -50,3 +50,8 @@ Routine choices inside the contract can be made by the engineer. Changes to data
 | D021 | Official IEEE-CIS Kaggle retraining and Render live deployment | Following portfolio remediation review, retrained full model pipeline on official IEEE-CIS dataset (`train_transaction.csv`, 590,540 rows, 182.5 days span). Champion LightGBM (`LGBM_unweighted_n200_lr0.05_l31`) achieved holdout AP 0.1809 (95% CI [0.1642, 0.1996]), ROC-AUC 0.8028, Top-1% Lift 10.01x, and cost savings +36,219 (+4,065 over baseline LR reference). Configured and verified real-time scoring API deployment blueprint on Render (`render.yaml`). Added MIT LICENSE and repository metadata. |
 
 
+
+
+## 6 October 2026: remediation evidence decision
+
+Preserve the original models and evaluation records. Repairs address packaging, evidence generation or display without retuning against viewed outcomes. Docker no longer copies ignored model artifacts. Existing read-only mount contract is used, with a non-root image and synthetic Docker scoring CI. Container contract regression passes and Ruff checks pass. Original IEEE-CIS models are untouched. Actual Docker/candidate CI/approved artifact hosting remain open.

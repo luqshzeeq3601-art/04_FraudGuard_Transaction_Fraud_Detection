@@ -226,3 +226,13 @@
 ### Checkpoint G6
 
 - [ ] G6 verified (OPEN: Local MVP handoff documented with empirical evidence and explicit limitations; live Docker and remote CI remain open).
+
+
+## Portfolio remediation: 6 October 2026
+
+Docker no longer copies ignored model artifacts. Existing read-only mount contract is used, with a non-root image and synthetic Docker scoring CI. Container contract regression passes and Ruff checks pass. Original IEEE-CIS models are untouched. Actual Docker/candidate CI/approved artifact hosting remain open.
+
+- [x] Verified local remediation evidence recorded.
+- [ ] Remaining applicable runtime/publication/hosting gates verified.
+
+- [x] Actual Linux container build/readiness/functional verification completed locally.

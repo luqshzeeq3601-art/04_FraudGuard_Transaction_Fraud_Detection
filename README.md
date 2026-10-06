@@ -1,159 +1,123 @@
-# FraudGuard: Transaction Fraud Detection & Capped Review System
+# FraudGuard
 
-[![FraudGuard CI](https://github.com/luqshzeeq3601-art/04_FraudGuard_Transaction_Fraud_Detection/actions/workflows/ci.yml/badge.svg)](https://github.com/luqshzeeq3601-art/04_FraudGuard_Transaction_Fraud_Detection/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Render: Live API](https://img.shields.io/badge/Render-Live%20API-teal.svg)](https://fraudguard-api.onrender.com/docs)
+**Score transaction fraud risk and allocate a bounded human-review queue.**
 
-## 1. Purpose
+[![CI](https://github.com/luqshzeeq3601-art/04_FraudGuard_Transaction_Fraud_Detection/actions/workflows/ci.yml/badge.svg?branch=fix%2Fportfolio-remediation)](https://github.com/luqshzeeq3601-art/04_FraudGuard_Transaction_Fraud_Detection/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-0f766e.svg)](LICENSE)
 
-A fraud-review team can inspect only a small fraction of transactions. A classifier that predicts the majority class can look accurate while giving that team nothing useful. FraudGuard ranks transactions by fraud risk and fills a **review queue capped at 1% of volume**, then measures how much fraud that queue captures against simple baselines.
+FraudGuard uses 12 allowlisted transaction predictors, chronological development/calibration/policy/test partitions, independent calibration and a frozen review policy. FastAPI scores single transactions; the CLI ranks batches and applies an integer review budget. This is a benchmark demonstrator, not a payment-blocking service.
 
-It is a production-grade ML engineering pipeline: chronological splits, strict schema validation on 12 allowlisted transaction fields, temporal cross-validation, independent probability calibration, a pre-test policy freeze, explanations, a scoring API, batch queue generation, drift monitoring, and live deployment on Render.
+## 1. Workflow
 
-> [!NOTE]
-> **Dataset status and real-world evaluation.**
-> Retrained and evaluated on the official **IEEE-CIS Fraud Detection Benchmark** (`train_transaction.csv`, 590,540 rows spanning 182.5 days). Chronological partitions: Development 354,324 rows (11,988 fraud, 3.38%), Calibration 59,054 (2,550 fraud, 4.32%), Policy 59,054 (2,061 fraud, 3.49%), Final Test Holdout 118,108 rows (4,064 fraud, 3.44%). See [`data/raw/DATA_PROVENANCE.md`](data/raw/DATA_PROVENANCE.md).
+![FraudGuard workflow: validate transactions, develop models, calibrate independently and freeze policy before the final holdout; serve a trusted bundle through single-score FastAPI or CLI batch ranking with a rounded-up 1% capacity.](docs/assets/workflow.png)
 
-## 2. Measured Results
+The batch capacity is `ceil(0.01 * batch_size)`; small batches therefore round up. The policy cutoff and deterministic ranking can select fewer rows. A single API request cannot enforce a global batch-review budget. Synthetic CI models are kept distinct from real IEEE-CIS benchmark evidence.
 
-### Final Holdout (`final_test`: 118,108 transactions, 4,064 fraud, 3.44% prevalence)
+## 2. Measured results
 
-| Model | AP | 95% bootstrap CI (AP) | ROC-AUC | Precision@1% | Recall@1% | Lift@1% | Brier | Simulated cost | Savings vs no review |
-|---|---|---|---|---|---|---|---|---|---|
-| **Champion: LightGBM (selected)** | **0.1809** | **[0.1642, 0.1996]** | **0.8028** | **0.3443** | **0.1001** | **10.01x** | **0.0306** | **370,181** | **+36,219 (+8.9%)** |
-| Logistic Regression reference (C=1.0) | 0.1487 | [0.1332, 0.1654] | 0.7760 | 0.3071 | 0.0893 | 8.93x | 0.0312 | 374,246 | +32,154 (+7.9%) |
-| Amount-rank baseline | 0.0365 | [0.0301, 0.0435] | 0.4797 | 0.0288 | 0.0084 | 0.84x | 0.0352 | 406,478 | -78 (-0.0%) |
-| Constant-prior reference | 0.0344 | [0.0344, 0.0344] | 0.5000 | 0.0567 | 0.0165 | 1.65x | 0.0332 | 406,400 | 0 |
+Final chronological holdout: **118,108 transactions**, 4,064 fraud cases, 3.44% prevalence. The selected model is calibrated LightGBM.
 
-Source: [`reports/final/final_evaluation.json`](reports/final/final_evaluation.json). Costs are evaluated using business cost units (missed fraud 100, review friction 1, legitimate review friction 2). Champion LightGBM delivers +4,065 cost savings over the baseline Logistic Regression reference.
+| Measure | Champion | Logistic-regression reference |
+| --- | --- | --- |
+| Average precision (AP) | **0.1809** | 0.1487 |
+| AP 95% block-bootstrap interval | **[0.1642, 0.1996]** | [0.1332, 0.1654] |
+| ROC-AUC | **0.8028** | 0.7760 |
+| Precision@1% | **0.3443** | 0.3071 |
+| Recall@1% | **0.1001** | 0.0893 |
 
-### Engineering & Quality Checks
+Source: [final evaluation](reports/final/final_evaluation.json), [model card](docs/MODEL_CARD.md). AP is sensitive to prevalence. The detailed cost model uses assumed cost units; it does not measure recovered money or real fraud prevention.
 
-| Check | Result | Evidence |
-|---|---|---|
-| API latency, 1,000 warm requests to `/v1/score` | p50 8.58 ms, p95 9.67 ms, p99 11.23 ms (target p95 <= 100 ms) | [`reports/api_benchmark.json`](reports/api_benchmark.json) |
-| Retraining reproducibility | 0.000000 AP and Brier difference (tolerance 0.001) | [`reports/repeatability/reproducibility.json`](reports/repeatability/reproducibility.json) |
-| Tests and coverage | 50 tests passing, 84% coverage (target >= 80%) | `pytest --cov` |
-| Test isolation | Suite leaves `artifacts/`, `reports/` and `data/` unchanged | `tests/test_isolation_guard.py` |
-| SHAP additivity | Max error 1.15e-13 (target <= 1e-4) | `reports/explanations/` |
-| Bootstrap uncertainty | 1,000 block bootstrap replicates over chronological test blocks | `reports/final/final_evaluation.json` |
+## 3. Quick start
 
-## 3. Live Scoring API Deployment
+Use Python 3.10. Clone/download the same branch or revision as this README, then run from the repository root. The verified updates are currently in [draft PR 1](https://github.com/luqshzeeq3601-art/04_FraudGuard_Transaction_Fraud_Detection/pull/1) on `fix/portfolio-remediation`.
 
-FraudGuard is configured and deployed as a real-time web service on the **Render free tier**:
-- **Live Service URL:** [`https://fraudguard-api.onrender.com`](https://fraudguard-api.onrender.com)
-- **Interactive Swagger Docs:** [`https://fraudguard-api.onrender.com/docs`](https://fraudguard-api.onrender.com/docs)
-- **Health Check:** [`https://fraudguard-api.onrender.com/health`](https://fraudguard-api.onrender.com/health)
-- **Infrastructure Blueprint:** [`render.yaml`](render.yaml)
-
-### API Endpoints
-
-| Method | Route | Purpose |
-|---|---|---|
-| GET | `/health` | Liveness and health probe |
-| GET | `/ready` | Readiness probe (verifies champion bundle loaded) |
-| GET | `/model-info` | Model metadata, version, calibration mode, and review cutoff |
-| POST | `/v1/score` | Real-time single transaction scoring and queue routing |
-
-Example request:
-```json
-{
-  "TransactionID": 3000001,
-  "TransactionDT": 86400,
-  "TransactionAmt": 150.0,
-  "ProductCD": "W",
-  "card4": "visa",
-  "card6": "debit",
-  "P_emaildomain": "gmail.com"
-}
-```
-
-## 4. Technology Stack
-
-Python 3.10 · pandas · NumPy · scikit-learn · LightGBM · SHAP · FastAPI + Uvicorn · MLflow (local SQLite tracking) · pytest · Ruff · Docker · GitHub Actions · Render. Exact versions are pinned in [`requirements-lock.txt`](requirements-lock.txt).
-
-## 5. Repository Layout
-
-```text
-src/fraudguard/      Package: data validation, splits, features, training, calibration,
-                     policy, evaluation, explanations, scoring, monitoring, API, CLI
-tests/               pytest test suite (isolated fixtures and full contract coverage)
-configs/project.json Project configuration (allowlist, partitions, search caps)
-examples/            Synthetic single request and batch inputs
-reports/             Tracked evaluation evidence, EDA, and benchmarks
-docs/                Specifications, decisions, progress log and model card
-tasks/todo.md        Task tracker (single source of task completion)
-scripts/             Quality-gate and verification scripts
-render.yaml          Render free-tier deployment blueprint
-Dockerfile           Containerization recipe for cloud deployments
-LICENSE              MIT License
-```
-
-## 6. Local Setup & Execution
-
-Tested with Python 3.10.11 on Windows and Linux.
-
-```powershell
+```sh
 python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements-lock.txt
 ```
 
-### Full Pipeline Commands
+Activate with `.\.venv\Scripts\Activate.ps1` in Windows PowerShell, or `source .venv/bin/activate` on Linux/macOS.
 
-```powershell
-# 1. Validate raw data
-fraudguard validate --input data/raw/train_transaction.csv --report reports/data_quality.json
-
-# 2. Chronological split and fold manifest
-fraudguard split --input data/raw/train_transaction.csv --output-dir data/processed
-
-# 3. Train baselines
-fraudguard train --models prior amount logistic --output-dir artifacts/baselines
-
-# 4. Tune and select champion candidate
-fraudguard tune --output-dir artifacts/selection --comparison-report reports/development_model_comparison.csv
-
-# 5. Independent probability calibration
-fraudguard calibrate --output-dir artifacts/champion
-
-# 6. Freeze review policy before test access
-fraudguard freeze-policy --output reports/freeze_manifest.json
-
-# 7. Final holdout evaluation
-fraudguard evaluate --partition final_test --output-dir reports/final
-
-# 8. SHAP explainability analysis
-fraudguard explain --output-dir reports/explanations
-
-# 9. Batch scoring and capped review queue
-fraudguard score --input examples/synthetic_batch.csv --output-dir reports/demo
-
-# 10. Drift monitoring
-fraudguard monitor --input examples/synthetic_batch.csv --output-dir reports/monitoring
-
-# 11. Retraining reproducibility verification
-fraudguard reproduce --output-dir reports/repeatability
+```sh
+python -m pip install -r requirements-lock.txt
+python -m pip install --no-deps -e .
 ```
 
-## 7. Tests and Quality Verification
+### Try validation with synthetic data
 
-```powershell
-ruff check src tests
-ruff format --check src tests
-pytest -p no:cacheprovider --cov=fraudguard --cov-report=term-missing
+This path requires neither Kaggle credentials nor the restricted raw benchmark file and leaves the saved real evaluation reports intact.
+
+```sh
+python -m fraudguard.cli generate-synthetic --rows 5000 --days 5 --fraud-rate 0.035 --output data/raw/demo_synthetic.csv
+python -m fraudguard.cli validate --input data/raw/demo_synthetic.csv --report reports/demo_quality.json
+python -m fraudguard.cli --help
 ```
 
-`scripts/verify_all.ps1` runs all quality gates locally. GitHub Actions CI automates these checks on every push.
+For a complete synthetic training/calibration/freeze/serving demonstration, use the exact [CI fixture pipeline](.github/workflows/ci.yml). For real-data reproduction, obtain IEEE-CIS through its official access process and follow [the operations guide](docs/07_OPERATIONS_AND_COMMANDS.md) and [data specification](docs/03_DATA_SPEC.md).
 
-## 8. Documentation & Architecture
+### Serve an approved trusted bundle
 
-- [Model Card](docs/MODEL_CARD.md)
-- [Problem & Objectives](docs/01_PROBLEM_AND_OBJECTIVES.md) · [PRD](docs/02_PRD.md) · [Data Specification](docs/03_DATA_SPEC.md)
-- [Technical Design](docs/04_TECHNICAL_DESIGN.md) · [Experiment Plan](docs/05_EXPERIMENT_PLAN.md) · [Validation & Release](docs/06_VALIDATION_AND_RELEASE.md)
-- [Operations & Commands](docs/07_OPERATIONS_AND_COMMANDS.md) · [Decisions Log](docs/08_DECISIONS_LOG.md) · [Progress Log](docs/09_PROGRESS_LOG.md)
-- [Release Checklist](reports/release_checklist.md)
+The real champion artifacts and raw IEEE-CIS data are **not included in public source**. Create or obtain an approved trusted bundle first; the API must fail readiness if it is missing or invalid. Never load an uploaded/untrusted pickle or joblib model.
 
-## 9. Data Attribution & License
+```sh
+python -m uvicorn fraudguard.api:app --host 127.0.0.1 --port 8000
+```
 
-Field names and data structure originate from the [IEEE-CIS Fraud Detection Benchmark](https://www.kaggle.com/c/ieee-fraud-detection) (IEEE Computational Intelligence Society and Vesta Corporation). Distributed under the [MIT License](LICENSE).
+Open [local API docs](http://127.0.0.1:8000/docs). [Synthetic transaction](examples/synthetic_transaction.json) · [Synthetic batch](examples/synthetic_batch.csv).
+
+### Docker with a read-only model mount
+
+The non-root image contains code/dependencies. In Bash, from a repository with an approved `artifacts/champion` bundle:
+
+```sh
+docker build -t fraudguard:local .
+docker run --rm -p 127.0.0.1:8000:8000 --mount "type=bind,source=$(pwd)/artifacts/champion,target=/app/artifacts/champion,readonly" fraudguard:local
+```
+
+On PowerShell, use `(Resolve-Path artifacts/champion).Path` as the absolute bind-mount source. Keep the mounted files readable by the container user and identify whether the bundle is real or synthetic.
+
+## 4. API and verification
+
+| Endpoint | Purpose |
+| --- | --- |
+| `GET /health` | Liveness |
+| `GET /ready` | Trusted champion loaded |
+| `GET /model-info` | Bundle, calibration and policy metadata |
+| `POST /v1/score` | Single transaction risk and routing information |
+
+**Full-test prerequisite:** a fresh public checkout has no champion or processed split manifest. In a disposable fresh checkout, create the same synthetic fixture used by CI before running pytest. These training steps write their standard artifact/report paths; keep them separate from a checkout holding the real benchmark release.
+
+```sh
+python -m fraudguard.cli generate-synthetic --rows 5000 --days 5 --fraud-rate 0.035 --output data/raw/train_transaction.csv
+python -m fraudguard.cli split --input data/raw/train_transaction.csv --output-dir data/processed
+python -m fraudguard.cli train --models prior amount logistic --output-dir artifacts/baselines
+python -m fraudguard.cli tune --output-dir artifacts/selection --comparison-report reports/development_model_comparison.csv
+python -m fraudguard.cli calibrate --output-dir artifacts/champion
+python -m fraudguard.cli freeze-policy --output reports/freeze_manifest.json
+```
+
+Then run the tests and lint checks:
+
+```sh
+python -m pytest -p no:cacheprovider --basetemp .pytest_tmp
+python -m ruff check src tests
+python -m ruff format --check src tests
+```
+
+CI uses this synthetic fixture, the >=80% coverage gate, a code-only image build and readiness/scoring through a read-only synthetic bundle mount. The synthetic bundle can also be used for the local serving examples; identify it as synthetic.
+
+## 5. Limitations and delivery
+
+- Later transactions differ from development data; the benchmark does not establish performance on live payments or other fraud labels.
+- Identity joins and opaque C/D/V fields are outside the declared feature scope. Recall@1% remains limited by the review budget.
+- **Public hosted scoring remains unverified** and requires an approved artifact-delivery method. The Render blueprint is not proof of a live service.
+- Human review, payment actions, streaming and automatic retraining are outside this MVP.
+
+## 6. Documentation and contributions
+
+[Start here](docs/00_START_HERE.md) · [Technical design](docs/04_TECHNICAL_DESIGN.md) · [Tasks](tasks/todo.md) · [Progress](docs/09_PROGRESS_LOG.md) · [Sources](docs/10_SOURCES.md) · [Release checklist](reports/release_checklist.md) · [Diagram notes and prompt](docs/assets/workflow.md)
+
+Follow [AGENTS.md](AGENTS.md). Keep partition timing and the frozen policy intact; do not tune using final-test labels or publish restricted raw data/model artifacts.
+
+## 7. License and data
+
+The [MIT license](LICENSE) covers project code/documentation. IEEE-CIS/Kaggle benchmark access and redistribution have separate terms; the repository includes aggregate evidence and synthetic examples rather than the restricted raw dataset.
