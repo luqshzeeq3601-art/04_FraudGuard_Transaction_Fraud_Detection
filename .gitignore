@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+src/*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.tmp/
+.pytest_cache/
+.pytest-tmp/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Project Data and Artifacts (Local, untracked)
+data/raw/*
+!data/raw/DATA_PROVENANCE.md
+data/processed/*
+artifacts/*
+mlruns/
+mlflow.db
+*.db
+*.sqlite
+reports/final/*
+reports/monitoring/*
+reports/explanations/*
+reports/demo/*
+reports/repeatability/*
+
+# Environment and Secrets
+.env
+*.env
+*.pem
+*.key
+*.pfx
+*.bak
+*.log
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo

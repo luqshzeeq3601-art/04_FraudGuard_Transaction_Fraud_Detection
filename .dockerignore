@@ -1,0 +1,13 @@
+.venv/
+.tmp/
+.pytest_cache/
+.coverage
+htmlcov/
+data/
+artifacts/
+mlruns/
+mlflow.db
+reports/
+tests/
+__pycache__/
+*.pyc

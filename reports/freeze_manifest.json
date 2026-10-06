@@ -1,0 +1,29 @@
+{
+  "freeze_timestamp_utc": "2026-10-06T02:39:56Z",
+  "review_fraction": 0.01,
+  "split_manifest_sha256": "f7c1535cc7fba0f1f2a8907eaea693a83a87329f70463d7e0135001dc72220cf",
+  "raw_data_sha256": "942a76e66f4234ed1ae092a7a133bb59b52f4149fae553ec2f4fa4265dc91f81",
+  "champion": {
+    "artifact_dir": "artifacts/champion",
+    "model_version": "fraudguard-champion-v1",
+    "cutoff": 0.5291623160542208,
+    "score_type": "raw_probability",
+    "file_hashes": {
+      "pipeline.joblib": "e25f7e1797dac3864bbafa51154d0907da07965a881a176a764b3f435b3f8014",
+      "feature_schema.json": "1df091294d11ad67597b26f4d49a1adc137213c674194a41f14e784443f3050d",
+      "policy.json": "4f7c1a00035869d30ae20d9d7fbf13fc9af9538e4c691908d97ec6eb56a8864f",
+      "reference_summary.json": "d617ac48748288657d95ba1e0c515137689a9380bc6c41fd65ca848a0e1511eb"
+    }
+  },
+  "baseline_lr_reference": {
+    "artifact_dir": "artifacts\\baselines\\logistic_reference",
+    "model_version": "lr-reference-v1",
+    "cutoff": 0.5678941769006233,
+    "file_hashes": {
+      "pipeline.joblib": "341461c8649396dea7bff5becf4c617124e01895a6d5b6567406386e00602edb",
+      "feature_schema.json": "1df091294d11ad67597b26f4d49a1adc137213c674194a41f14e784443f3050d",
+      "policy.json": "64412db847af8543bda686bd475b44432789826c1452626467936dbbe9bd2aa8",
+      "reference_summary.json": "d617ac48748288657d95ba1e0c515137689a9380bc6c41fd65ca848a0e1511eb"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "TransactionID": 1000000,
+  "TransactionDT": 86401,
+  "TransactionAmt": 237.25,
+  "ProductCD": "W",
+  "dist1": 53.6,
+  "dist2": null,
+  "card4": "visa",
+  "card6": "debit",
+  "addr1": 315,
+  "addr2": 87,
+  "P_emaildomain": "gmail.com",
+  "R_emaildomain": null,
+  "M4": "M0",
+  "M6": "T"
+}

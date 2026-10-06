@@ -1,0 +1,5 @@
+experiment_id,model_family,variant,mean_AP,std_AP,mean_Recall@1%,mean_Precision@1%,mean_Lift@1%,mean_Brier
+E00,Prior,Constant prevalence,0.04867,0.00533,0.0,0.0,0.0,0.04633
+E01,Amount,TransactionAmt descending,0.12373,0.02047,0.0119,0.06667,1.1881,0.04648
+E02,LogisticRegression,Unweighted C=1.0 (Fixed Reference),0.33818,0.07135,0.10625,0.52222,10.3654,0.0401
+E03,LogisticRegression,Balanced weights C=1.0,0.33487,0.08557,0.10691,0.51111,10.1812,0.11644

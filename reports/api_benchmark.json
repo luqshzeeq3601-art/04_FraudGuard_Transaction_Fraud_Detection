@@ -1,0 +1,18 @@
+{
+  "benchmark_timestamp_utc": "2026-10-06T02:40:56Z",
+  "url": "http://127.0.0.1:8000/v1/score",
+  "warmup_count": 100,
+  "request_count": 1000,
+  "successful_requests": 1000,
+  "error_count": 0,
+  "total_duration_seconds": 8.671,
+  "latency_ms": {
+    "p50": 8.578,
+    "p95": 9.671,
+    "p99": 11.226,
+    "mean": 8.67,
+    "min": 7.52,
+    "max": 85.241
+  },
+  "target_p95_le_100ms_met": true
+}

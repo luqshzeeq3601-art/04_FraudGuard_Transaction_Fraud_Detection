@@ -1,0 +1,19 @@
+config_name,model_family,params,mean_AP,std_AP,mean_Recall@1%,std_Recall@1%,mean_Precision@1%,mean_Lift@1%,mean_Brier
+LGBM_unweighted_n200_lr0.03_l15,LightGBM,"{'n_estimators': 200, 'learning_rate': 0.03, 'num_leaves': 15, 'min_child_samples': 50, 'weight_mode': 'unweighted', 'seed': 42}",0.48701,0.03122,0.2056,0.02602,0.67543,20.4456,0.0229
+LGBM_sqrt_imbalance_n200_lr0.03_l15,LightGBM,"{'n_estimators': 200, 'learning_rate': 0.03, 'num_leaves': 15, 'min_child_samples': 50, 'weight_mode': 'sqrt_imbalance', 'seed': 42}",0.48516,0.02441,0.21716,0.03448,0.70876,21.6021,0.03293
+LGBM_unweighted_n200_lr0.05_l15,LightGBM,"{'n_estimators': 200, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 100, 'weight_mode': 'unweighted', 'seed': 42}",0.47512,0.03054,0.19826,0.01765,0.65529,19.7091,0.0232
+LGBM_sqrt_imbalance_n200_lr0.05_l15,LightGBM,"{'n_estimators': 200, 'learning_rate': 0.05, 'num_leaves': 15, 'min_child_samples': 100, 'weight_mode': 'sqrt_imbalance', 'seed': 42}",0.46689,0.03574,0.20413,0.04222,0.66275,20.3142,0.03213
+LGBM_unweighted_n200_lr0.05_l31,LightGBM,"{'n_estimators': 200, 'learning_rate': 0.05, 'num_leaves': 31, 'min_child_samples': 50, 'weight_mode': 'unweighted', 'seed': 42}",0.45368,0.01754,0.19655,0.02973,0.64248,19.5503,0.02377
+LGBM_unweighted_n400_lr0.03_l31,LightGBM,"{'n_estimators': 400, 'learning_rate': 0.03, 'num_leaves': 31, 'min_child_samples': 100, 'weight_mode': 'unweighted', 'seed': 42}",0.44563,0.0298,0.1881,0.02714,0.61595,18.7087,0.024
+LGBM_sqrt_imbalance_n400_lr0.03_l31,LightGBM,"{'n_estimators': 400, 'learning_rate': 0.03, 'num_leaves': 31, 'min_child_samples': 100, 'weight_mode': 'sqrt_imbalance', 'seed': 42}",0.44023,0.02962,0.19211,0.0507,0.61673,19.1286,0.02943
+LGBM_sqrt_imbalance_n200_lr0.05_l31,LightGBM,"{'n_estimators': 200, 'learning_rate': 0.05, 'num_leaves': 31, 'min_child_samples': 50, 'weight_mode': 'sqrt_imbalance', 'seed': 42}",0.43672,0.00847,0.18835,0.02761,0.61595,18.7342,0.02969
+LR_C0.1_unweighted,LogisticRegression,"{'C': 0.1, 'class_weight': None, 'seed': 42}",0.42344,0.02077,0.19046,0.02883,0.62261,18.9451,0.02452
+LR_C1.0_unweighted,LogisticRegression,"{'C': 1.0, 'class_weight': None, 'seed': 42}",0.4233,0.0233,0.19368,0.02428,0.63569,19.2609,0.02453
+LR_C10.0_unweighted,LogisticRegression,"{'C': 10.0, 'class_weight': None, 'seed': 42}",0.42318,0.02371,0.19368,0.02428,0.63569,19.2609,0.02456
+LGBM_unweighted_n400_lr0.05_l63,LightGBM,"{'n_estimators': 400, 'learning_rate': 0.05, 'num_leaves': 63, 'min_child_samples': 100, 'weight_mode': 'unweighted', 'seed': 42}",0.42146,0.02896,0.18438,0.02792,0.60274,18.3399,0.02605
+LGBM_unweighted_n200_lr0.1_l31,LightGBM,"{'n_estimators': 200, 'learning_rate': 0.1, 'num_leaves': 31, 'min_child_samples': 50, 'weight_mode': 'unweighted', 'seed': 42}",0.41954,0.02974,0.17196,0.02639,0.56301,17.1041,0.02497
+LR_C0.1_balanced,LogisticRegression,"{'C': 0.1, 'class_weight': 'balanced', 'seed': 42}",0.41418,0.02729,0.19106,0.02338,0.62902,18.999,0.09861
+LR_C1.0_balanced,LogisticRegression,"{'C': 1.0, 'class_weight': 'balanced', 'seed': 42}",0.41318,0.02862,0.1887,0.02285,0.62235,18.7625,0.09855
+LR_C10.0_balanced,LogisticRegression,"{'C': 10.0, 'class_weight': 'balanced', 'seed': 42}",0.41253,0.03006,0.18634,0.02281,0.61569,18.5261,0.09852
+LGBM_sqrt_imbalance_n200_lr0.1_l31,LightGBM,"{'n_estimators': 200, 'learning_rate': 0.1, 'num_leaves': 31, 'min_child_samples': 50, 'weight_mode': 'sqrt_imbalance', 'seed': 42}",0.40973,0.02342,0.18201,0.02627,0.59608,18.1035,0.02777
+LGBM_sqrt_imbalance_n400_lr0.05_l63,LightGBM,"{'n_estimators': 400, 'learning_rate': 0.05, 'num_leaves': 63, 'min_child_samples': 100, 'weight_mode': 'sqrt_imbalance', 'seed': 42}",0.40968,0.0294,0.17617,0.0306,0.57634,17.5257,0.02744

@@ -1,0 +1,30 @@
+{
+  "decision": "raw_probability",
+  "use_calibration": false,
+  "criteria": {
+    "brier_improved_ge_0_001": {
+      "passed": false,
+      "diff": -7.5e-05
+    },
+    "ap_drop_le_0_005": {
+      "passed": true,
+      "diff": 0.0
+    },
+    "recall_drop_le_0_02": {
+      "passed": true,
+      "diff": 0.0
+    }
+  },
+  "raw_metrics": {
+    "brier_score": 0.021148,
+    "log_loss": 0.074782,
+    "average_precision": 0.438713,
+    "recall_at_1pct": 0.197368
+  },
+  "calibrated_metrics": {
+    "brier_score": 0.021223,
+    "log_loss": 0.074682,
+    "average_precision": 0.438713,
+    "recall_at_1pct": 0.197368
+  }
+}
