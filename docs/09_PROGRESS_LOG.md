@@ -232,4 +232,46 @@ Decisions recorded: D020 updated in docs/08_DECISIONS_LOG.md (clarified retrospe
 Next dependency-ready task: None. Local demonstrator documented accurately with explicit empirical boundaries.
 ```
 
+## 10. Official IEEE-CIS Retraining, Render Deployment & Portfolio Polish, 6 October 2026
+
+```text
+Date/time (Malaysia): 2026-10-06 15:35 MYT
+Task IDs and milestone: Portfolio Review Remediation (Items 1–4 Complete)
+Changed files:
+  - LICENSE (created MIT license matching Projects 1 and 2)
+  - render.yaml (created Render free-tier web service deployment blueprint)
+  - Dockerfile (updated to package model artifacts)
+  - data/raw/DATA_PROVENANCE.md (updated with official IEEE-CIS metadata: 590,540 rows, 182.5 days span)
+  - reports/development_eda.md (regenerated with 354,324 development partition statistics)
+  - artifacts/champion/ (trained and saved LightGBM champion on official development partition)
+  - artifacts/baselines/ (trained Prior, Amount, and Logistic Regression reference baselines)
+  - reports/final/ (evaluated champion on 118,108-row holdout test partition with 1,000 bootstrap replicates)
+  - README.md & docs/MODEL_CARD.md (updated with real holdout metrics, Render live API links, and MIT license)
+  - docs/08_DECISIONS_LOG.md (recorded D021)
+  - tests/test_selection.py (optimized to use self-contained fixture)
+Commands/checks executed:
+  - kaggle datasets download -d lnasiri007/ieeecis-fraud-detection (590,540 rows, 683MB CSV, SHA-256 3a5c83ab...)
+  - fraudguard validate (passed across 590,540 rows -> reports/data_quality.json)
+  - fraudguard split (generated chronological 60/10/10/20 partitions -> data/processed/split_manifest.json)
+  - fraudguard train (Prior, Amount, and LR baselines trained -> artifacts/baselines/)
+  - fraudguard tune (18 configs evaluated across temporal CV folds; selected LGBM_unweighted_n200_lr0.05_l31)
+  - fraudguard calibrate (raw probability selected -> artifacts/champion/)
+  - fraudguard freeze-policy (cutoff tau=0.233179 frozen -> reports/freeze_manifest.json)
+  - fraudguard evaluate (118,108 holdout rows; Champion AP 0.1809, Recall@1% 0.1001, Lift 10.01x -> reports/final/)
+  - fraudguard explain (SHAP max additivity error 1.15e-13 <= 1e-4 check passed)
+  - fraudguard reproduce (exact 0.000000 AP & Brier diff -> reports/repeatability/reproducibility.json)
+  - pytest -p no:cacheprovider --cov=fraudguard --cov-report=term-missing (50 passed, 84% coverage)
+  - ruff check src tests (0 errors)
+  - ruff format --check src tests (clean)
+  - gh repo edit (added description and topics: machine-learning, fraud-detection, fastapi, lightgbm, scikit-learn, mlops, shap)
+Measured outputs:
+  - Champion LightGBM AP: 0.1809 (95% CI: [0.1642, 0.1996]) vs LR 0.1487 vs Amount 0.0365 vs Prior 0.0344
+  - Champion ROC-AUC: 0.8028 vs LR 0.7760
+  - Precision@1%: 0.3443 (Lift: 10.01x, 407 fraud cases captured in top 1% queue)
+  - Simulated Cost: 370,181 (Cost savings vs none: +36,219 / 8.9%; vs LR: +4,065 savings)
+  - Live API: https://fraudguard-api.onrender.com (Swagger: https://fraudguard-api.onrender.com/docs)
+Met/missed acceptance criteria: All 4 portfolio remediation review items completed.
+```
+
+
 

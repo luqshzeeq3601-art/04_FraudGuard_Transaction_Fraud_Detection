@@ -7,8 +7,17 @@ from fraudguard.train import tune_and_select_model
 
 def test_tune_and_selection_rule(tmp_path):
     out_dir = tmp_path / "selection"
+    from fraudguard.splits import build_and_save_split_manifest
+    from fraudguard.synthetic import generate_synthetic_transactions
+
+    raw_csv = tmp_path / "raw.csv"
+    df_raw = generate_synthetic_transactions(n_rows=200, seed=42, fraud_rate=0.08)
+    df_raw.to_csv(raw_csv, index=False)
+    proc_dir = tmp_path / "processed"
+    build_and_save_split_manifest(str(raw_csv), output_dir=str(proc_dir))
+
     selected = tune_and_select_model(
-        manifest_path="data/processed/split_manifest.json",
+        manifest_path=str(proc_dir / "split_manifest.json"),
         config_path="configs/project.json",
         output_dir=str(out_dir),
     )

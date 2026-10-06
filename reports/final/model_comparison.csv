@@ -1,0 +1,5 @@
+model_name,model_family,frozen_cutoff,AP,ROC_AUC,Brier,Top1pct_Precision,Top1pct_Recall,Top1pct_Lift,Policy_Selected,Policy_Precision,Policy_Recall,Simulated_Cost,Cost_Savings_vs_None
+Prior Reference,Prior,0.03383,0.03441,0.5,0.03323,0.056684,0.016486,1.6473,0,,0.0,406400.0,0.0
+Amount Baseline,Amount,1222.0,0.03647,0.47965,0.03523,0.028765,0.008366,0.836,1182,0.028765,0.008366,406478.0,-78.0
+Logistic Regression Reference,LogisticRegression,0.230364,0.14871,0.77595,0.03121,0.307107,0.089321,8.9251,1114,0.312388,0.08563,374246.0,32154.0
+Champion (LightGBM),LightGBM,0.233179,0.18088,0.80283,0.0306,0.344332,0.100148,10.007,1119,0.346738,0.095472,370181.0,36219.0

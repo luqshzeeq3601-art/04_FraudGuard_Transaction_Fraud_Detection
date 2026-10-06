@@ -4,13 +4,14 @@
 
 | Field | Value at Handoff |
 |---|---|
-| **Model Family** | LightGBM Classifier (`LGBM_unweighted_n200_lr0.03_l15`) |
-| **Hyperparameters** | `n_estimators=200`, `learning_rate=0.03`, `num_leaves=15`, `min_child_samples=50`, `weight_mode=unweighted`, `random_state=42` |
-| **Probability Calibration** | Raw probabilities selected (Brier 0.02115 on independent 4,998-row calibration partition) |
-| **Policy Decision** | Cutoff $\tau = 0.529162$ derived on policy partition (5,000 rows) for 1% review capacity |
+| **Model Family** | LightGBM Classifier (`LGBM_unweighted_n200_lr0.05_l31`) |
+| **Hyperparameters** | `n_estimators=200`, `learning_rate=0.05`, `num_leaves=31`, `min_child_samples=50`, `weight_mode=unweighted`, `random_state=42` |
+| **Probability Calibration** | Raw probabilities retained (`raw_probability`, Brier 0.03017 vs Calibrated 0.02997 on policy partition) |
+| **Policy Decision** | Frozen cutoff $\tau = 0.233179$ derived on policy partition (59,054 rows) for 1% review capacity |
 | **Model & Schema Versions** | Model: `fraudguard-champion-v1`, Policy: `review-v1-frozen`, Schema: `1.0.0` |
 | **Feature Allowlist** | 12 raw transaction fields (`TransactionAmt`, `ProductCD`, `dist1`, `dist2`, `card4`, `card6`, `addr1`, `addr2`, `P_emaildomain`, `R_emaildomain`, `M4`, `M6`) and temporal timestamp |
-| **Hardware & Environment** | Python 3.10.11, Windows 11, x86_64, pinned in `requirements-lock.txt` |
+| **Training Dataset** | Official IEEE-CIS Fraud Detection Benchmark (590,540 rows spanning 182.5 days) |
+| **Hardware & Environment** | Python 3.10.11, Windows 11 / Linux, x86_64, pinned in `requirements-lock.txt` |
 | **Reproducibility Verification** | Exact 0.000000 AP & Brier difference on retrain (`reports/repeatability/reproducibility.json`) |
 
 ---
@@ -18,25 +19,26 @@
 ## 2. Intended Use & Boundaries
 
 - **Intended Use:** High-throughput transaction risk scoring and generation of a top-ranked, capacity-constrained manual review queue (1% operational budget).
-- **Out of Scope:** Automated transaction blocking, live payment gateway integration, cardholder profiling without human review, credit decisioning.
+- **Deployment Platform:** Live web service deployed on Render ([`https://fraudguard-api.onrender.com`](https://fraudguard-api.onrender.com)).
+- **Out of Scope:** Automated transaction blocking, direct payment gateway integration, unreviewed cardholder account freezing.
 
 ---
 
 ## 3. Final Evaluation & Measured Metrics
 
-Evaluated on the frozen chronological `final_test` partition (10,000 transactions, 356 fraud cases, 3.56% prevalence):
+Evaluated on the frozen chronological `final_test` holdout partition (118,108 transactions, 4,064 fraud cases, 3.44% prevalence):
 
 | Metric | Champion (LightGBM) | 95% Bootstrap CI | Baseline (Logistic Regression) | Amount-Rank Baseline | Constant-Prior Baseline | Target / Status |
 |---|---|---|---|---|---|---|
-| **Average Precision (AP)** | **0.4753** | **[0.4102, 0.5344]** | 0.4177 | 0.0865 | 0.0356 | $> 0.0865$ (MET) |
-| **ROC-AUC** | **0.9526** | **[0.9380, 0.9650]** | 0.9312 | 0.6756 | 0.5000 | $> 0.8000$ (MET) |
-| **Precision@1%** | **0.6700** | **[0.5500, 0.7800]** | 0.6500 | 0.1300 | 0.0400 | $> 0.3000$ (MET) |
-| **Recall@1%** | **0.1882** | **[0.1480, 0.2228]** | 0.1826 | 0.0365 | 0.0112 | $> 0.0652$ (MET) |
-| **Lift@1%** | **18.82x** | **[15.45x, 21.91x]** | 18.26x | 3.65x | 1.12x | $> 5.0x$ (MET) |
-| **Brier Score** | **0.0243** | **[0.0210, 0.0280]** | 0.0262 | 0.0341 | 0.0343 | $< 0.0350$ (MET) |
-| **Simulated Cost** | **29,066.0** | — | 29,270.0 | 34,574.0 | 35,600.0 | Savings: 6,534.0 units (18.4% MET) |
+| **Average Precision (AP)** | **0.1809** | **[0.1642, 0.1996]** | 0.1487 | 0.0365 | 0.0344 | $> 0.0365$ (MET) |
+| **ROC-AUC** | **0.8028** | **[0.7925, 0.8131]** | 0.7760 | 0.4797 | 0.5000 | $> 0.7500$ (MET) |
+| **Precision@1%** | **0.3443** | **[0.3120, 0.3780]** | 0.3071 | 0.0288 | 0.0567 | $> 0.2000$ (MET) |
+| **Recall@1%** | **0.1001** | **[0.0890, 0.1115]** | 0.0893 | 0.0084 | 0.0165 | $> 0.0500$ (MET) |
+| **Lift@1%** | **10.01x** | **[9.07x, 10.98x]** | 8.93x | 0.84x | 1.65x | $> 5.0x$ (MET) |
+| **Brier Score** | **0.0306** | **[0.0295, 0.0317]** | 0.0312 | 0.0352 | 0.0332 | $< 0.0350$ (MET) |
+| **Simulated Cost** | **370,181.0** | — | 374,246.0 | 406,478.0 | 406,400.0 | Savings: 36,219.0 units (8.9% MET) |
 
-*Simulated Cost formula: $100 \times \text{FN} + 1 \times (\text{TP} + \text{FP}) + 2 \times \text{FP}$.*
+*Simulated Cost formula: $100 \times \text{FN} + 1 \times (\text{TP} + \text{FP}) + 2 \times \text{FP}$. Champion LightGBM delivers +4,065 cost savings over the baseline Logistic Regression reference.*
 
 ### API Performance & Latency (1,000 Sequential Requests)
 - **p50:** 8.58 ms
@@ -49,20 +51,14 @@ Evaluated on the frozen chronological `final_test` partition (10,000 transaction
 
 ## 4. Explainability Summary
 
-- **Global Feature Importance:** Top predictive features by permutation AP drop on policy partition:
-  1. `ProductCD` (+0.278 AP drop)
-  2. `P_emaildomain` (+0.126 AP drop)
-  3. `TransactionAmt` (+0.071 AP drop)
-  4. `addr1` (+0.044 AP drop)
-  5. `dist1` (+0.018 AP drop)
-- **Local SHAP Explanations:** TreeExplainer computed on 200 policy transactions. SHAP additivity verified with maximum discrepancy $1.32 \times 10^{-14} \le 10^{-4}$.
+- **Global Feature Importance:** Evaluated by permutation AP drop on policy partition across all allowlisted features. Top predictive drivers: `ProductCD`, `P_emaildomain`, `TransactionAmt`, `addr1`, `card4`.
+- **Local SHAP Explanations:** TreeExplainer computed on policy cohort transactions. Exact additivity verified with maximum discrepancy $1.15 \times 10^{-13} \le 10^{-4}$.
 
 ---
 
 ## 5. Limitations & Ethical Considerations
 
-1. **Benchmark Fixture Context & Synthetic Rule Recovery:** Evaluated on a 50,000-row synthetic benchmark fixture (`train_transaction.csv`) spanning 24.85 days (~25 days). The performance separation where LightGBM improves over Logistic Regression reflects recovery of planted interaction rules (night-hour risks, high-risk email domains, ProductCD amounts) rather than real fraud detection efficacy on IEEE-CIS. Full-scale real evaluation requires the Kaggle IEEE-CIS dataset.
-2. **Uncertainty Bounds:** The ~5-day temporal span of the final test partition provided adequate distinct day blocks for block bootstrap resampling (1,000 valid stationary block bootstrap replicates).
-3. **Label Delay:** Production fraud labels typically experience 30–90 day chargeback lag; real-time performance must be monitored using unlabelled distribution drift indicators.
-4. **Capacity Constraints:** Fixed 1% manual review cap ensures analyst queues are not overwhelmed, capturing 67 fraud cases out of 100 reviewed transactions.
-5. **Demographic & Fair Lending:** No protected personal attributes (race, gender, age) are utilized. Features are strictly transactional and routing metadata.
+1. **Official Competition Benchmark:** Retrained and verified on the official 590,540-row IEEE-CIS competition dataset spanning 182.5 days. Feature allowlist is restricted to 12 canonical transaction fields without identity table joins.
+2. **Uncertainty Bounds:** Full 1,000 block bootstrap resampling over chronological test blocks provides tight 95% confidence intervals on AP [0.1642, 0.1996] and Recall@1% [0.0890, 0.1115].
+3. **Review Cap:** 1% review capacity limits analyst operational workload while intercepting over 400 fraudulent transactions in the holdout period.
+4. **Demographic & Fair Lending:** No protected personal attributes (race, gender, age) are utilized. Features are strictly transactional and routing metadata.

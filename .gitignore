@@ -25,11 +25,9 @@ mlruns/
 mlflow.db
 *.db
 *.sqlite
-reports/final/*
 reports/monitoring/*
 reports/explanations/*
 reports/demo/*
-reports/repeatability/*
 
 # Environment and Secrets
 .env

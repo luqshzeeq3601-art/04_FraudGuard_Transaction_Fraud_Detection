@@ -2,7 +2,7 @@
 
 ## 1. Current status
 
-**All implementation commands below are planned interfaces.** The package, environment, datasets and artifacts do not exist yet. T01 onward must implement these interfaces and update this document with tested commands. Do not run the sequence blindly before its prerequisites exist.
+**Implemented.** The package, CLI and API exist and the commands below were executed with Python 3.10.11 (the `py -3.11` example in section 2 was not available on the host). Results and task status: [README](../README.md) and [task tracker](../tasks/todo.md). The live container check (section 9) has not been executed; T17 remains open.
 
 Use PowerShell from `04_FraudGuard_Transaction_Fraud_Detection`. Check local Python availability first. Routine execution never modifies neighbouring projects.
 

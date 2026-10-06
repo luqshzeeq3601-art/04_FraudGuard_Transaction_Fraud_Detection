@@ -1,0 +1,171 @@
+{
+  "evaluation_partition": "final_test",
+  "total_rows": 118108,
+  "total_fraud": 4064,
+  "prevalence": 0.034409,
+  "freeze_manifest_verified": true,
+  "champion_model": {
+    "model_version": "fraudguard-champion-v1",
+    "model_family": "LightGBM",
+    "score_type": "raw_probability",
+    "frozen_cutoff": 0.233179,
+    "average_precision": 0.18088,
+    "roc_auc": 0.80283,
+    "brier_score": 0.0306,
+    "log_loss": 0.12632,
+    "top_k_ranking": {
+      "total_rows": 118108,
+      "total_fraud": 4064,
+      "prevalence": 0.034409,
+      "by_fraction": {
+        "0.005": {
+          "fraction": 0.005,
+          "k": 591,
+          "selected_fraud": 233,
+          "precision": 0.394247,
+          "recall": 0.057333,
+          "lift": 11.4576,
+          "fraud_amount_captured": 51961.95
+        },
+        "0.01": {
+          "fraction": 0.01,
+          "k": 1182,
+          "selected_fraud": 407,
+          "precision": 0.344332,
+          "recall": 0.100148,
+          "lift": 10.007,
+          "fraud_amount_captured": 76725.55
+        },
+        "0.02": {
+          "fraction": 0.02,
+          "k": 2363,
+          "selected_fraud": 667,
+          "precision": 0.282268,
+          "recall": 0.164124,
+          "lift": 8.2033,
+          "fraud_amount_captured": 110186.75
+        },
+        "0.05": {
+          "fraction": 0.05,
+          "k": 5906,
+          "selected_fraud": 1318,
+          "precision": 0.223163,
+          "recall": 0.324311,
+          "lift": 6.4856,
+          "fraud_amount_captured": 198531.03
+        }
+      }
+    },
+    "policy_metrics": {
+      "total_rows": 118108,
+      "total_fraud": 4064,
+      "selected_for_review": 1119,
+      "review_rate": 0.009474,
+      "selected_fraud": 388,
+      "policy_precision": 0.346738,
+      "policy_recall": 0.095472,
+      "observed_fraud_amount_captured": 74217.21,
+      "queue_underfilled": false
+    },
+    "simulated_cost": {
+      "missed_fraud_cost": 100.0,
+      "review_cost": 1.0,
+      "legitimate_friction_cost": 2.0,
+      "total_fraud": 4064,
+      "selected_count": 1119,
+      "selected_fraud (TP)": 388,
+      "missed_fraud (FN)": 3676,
+      "false_alarms (FP)": 731,
+      "true_negatives (TN)": 113313,
+      "simulated_cost": 370181.0,
+      "cost_review_none": 406400.0,
+      "cost_savings": 36219.0
+    },
+    "uncertainty_block_bootstrap": {
+      "status": "success",
+      "n_bootstraps": 1000,
+      "valid_replicates": 1000,
+      "average_precision": {
+        "mean": 0.18195,
+        "ci_95_lower": 0.16424,
+        "ci_95_upper": 0.19959
+      },
+      "recall_at_1pct": {
+        "mean": 0.10018,
+        "ci_95_lower": 0.08903,
+        "ci_95_upper": 0.11147
+      }
+    }
+  },
+  "model_comparison": [
+    {
+      "model_name": "Prior Reference",
+      "model_family": "Prior",
+      "frozen_cutoff": 0.03383,
+      "AP": 0.03441,
+      "ROC_AUC": 0.5,
+      "Brier": 0.03323,
+      "Top1pct_Precision": 0.056684,
+      "Top1pct_Recall": 0.016486,
+      "Top1pct_Lift": 1.6473,
+      "Policy_Selected": 0,
+      "Policy_Precision": null,
+      "Policy_Recall": 0.0,
+      "Simulated_Cost": 406400.0,
+      "Cost_Savings_vs_None": 0.0
+    },
+    {
+      "model_name": "Amount Baseline",
+      "model_family": "Amount",
+      "frozen_cutoff": 1222.0,
+      "AP": 0.03647,
+      "ROC_AUC": 0.47965,
+      "Brier": 0.03523,
+      "Top1pct_Precision": 0.028765,
+      "Top1pct_Recall": 0.008366,
+      "Top1pct_Lift": 0.836,
+      "Policy_Selected": 1182,
+      "Policy_Precision": 0.028765,
+      "Policy_Recall": 0.008366,
+      "Simulated_Cost": 406478.0,
+      "Cost_Savings_vs_None": -78.0
+    },
+    {
+      "model_name": "Logistic Regression Reference",
+      "model_family": "LogisticRegression",
+      "frozen_cutoff": 0.230364,
+      "AP": 0.14871,
+      "ROC_AUC": 0.77595,
+      "Brier": 0.03121,
+      "Top1pct_Precision": 0.307107,
+      "Top1pct_Recall": 0.089321,
+      "Top1pct_Lift": 8.9251,
+      "Policy_Selected": 1114,
+      "Policy_Precision": 0.312388,
+      "Policy_Recall": 0.08563,
+      "Simulated_Cost": 374246.0,
+      "Cost_Savings_vs_None": 32154.0
+    },
+    {
+      "model_name": "Champion (LightGBM)",
+      "model_family": "LightGBM",
+      "frozen_cutoff": 0.233179,
+      "AP": 0.18088,
+      "ROC_AUC": 0.80283,
+      "Brier": 0.0306,
+      "Top1pct_Precision": 0.344332,
+      "Top1pct_Recall": 0.100148,
+      "Top1pct_Lift": 10.007,
+      "Policy_Selected": 1119,
+      "Policy_Precision": 0.346738,
+      "Policy_Recall": 0.095472,
+      "Simulated_Cost": 370181.0,
+      "Cost_Savings_vs_None": 36219.0
+    }
+  ],
+  "usefulness_checks": {
+    "minimum_AP_greater_than_prevalence": true,
+    "minimum_Lift_at_1pct_greater_than_1": true,
+    "stretch_AP_improvement_over_LR": true
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "timestamp_utc": "2026-10-06T07:22:19Z",
+  "model_family": "LightGBM",
+  "is_calibrated": false,
+  "original_policy_AP": 0.229562,
+  "reproduced_policy_AP": 0.229562,
+  "AP_absolute_diff": 0.0,
+  "original_policy_Brier": 0.030169,
+  "reproduced_policy_Brier": 0.030169,
+  "Brier_absolute_diff": 0.0,
+  "max_score_discrepancy": 0.0,
+  "reproducibility_tolerance_0_001_met": true
+}

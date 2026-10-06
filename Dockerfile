@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy package requirements and metadata
 COPY pyproject.toml README.md ./
 COPY src/ ./src/
+COPY artifacts/ ./artifacts/
 
 # Install dependencies and package
 RUN pip install --no-cache-dir --upgrade pip && \
