@@ -33,6 +33,15 @@ jobs:
         run: |
           ruff format --check src tests
 
+      - name: Generate Synthetic Pipeline Fixtures
+        run: |
+          fraudguard generate-synthetic --rows 500 --days 2 --fraud-rate 0.05 --output data/raw/train_transaction.csv
+          fraudguard split --input data/raw/train_transaction.csv --output-dir data/processed
+          fraudguard train --models prior amount logistic --output-dir artifacts/baselines
+          fraudguard tune --output-dir artifacts/selection --comparison-report reports/development_model_comparison.csv
+          fraudguard calibrate --output-dir artifacts/champion
+          fraudguard freeze-policy --output reports/freeze_manifest.json
+
       - name: Run Pytest with Coverage
         run: |
           pytest -p no:cacheprovider --cov=fraudguard --cov-report=term-missing --cov-fail-under=80
