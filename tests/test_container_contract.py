@@ -15,6 +15,9 @@ def test_dockerfile_and_ignore_contract():
     assert "EXPOSE 8000" in df_content
     assert "FRAUDGUARD_ARTIFACT_DIR=/app/artifacts/champion" in df_content
     assert "uvicorn" in df_content
+    assert "COPY artifacts/" not in df_content, (
+        "Model bundles enter through the documented read-only mount"
+    )
 
     di_content = dockerignore.read_text(encoding="utf-8")
     assert "data/" in di_content

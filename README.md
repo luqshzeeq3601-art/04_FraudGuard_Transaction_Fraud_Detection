@@ -38,9 +38,9 @@ Source: [`reports/final/final_evaluation.json`](reports/final/final_evaluation.j
 | SHAP additivity | Max error 1.15e-13 (target <= 1e-4) | `reports/explanations/` |
 | Bootstrap uncertainty | 1,000 block bootstrap replicates over chronological test blocks | `reports/final/final_evaluation.json` |
 
-## 3. Live Scoring API Deployment
+## 3. Scoring API deployment configuration
 
-FraudGuard is configured and deployed as a real-time web service on the **Render free tier**:
+FraudGuard includes a Render deployment blueprint. Public serving remains unverified until an approved trusted model is available and readiness/scoring checks pass:
 - **Live Service URL:** [`https://fraudguard-api.onrender.com`](https://fraudguard-api.onrender.com)
 - **Interactive Swagger Docs:** [`https://fraudguard-api.onrender.com/docs`](https://fraudguard-api.onrender.com/docs)
 - **Health Check:** [`https://fraudguard-api.onrender.com/health`](https://fraudguard-api.onrender.com/health)
@@ -156,4 +156,8 @@ pytest -p no:cacheprovider --cov=fraudguard --cov-report=term-missing
 
 ## 9. Data Attribution & License
 
-Field names and data structure originate from the [IEEE-CIS Fraud Detection Benchmark](https://www.kaggle.com/c/ieee-fraud-detection) (IEEE Computational Intelligence Society and Vesta Corporation). Distributed under the [MIT License](LICENSE).
+Field names and data structure originate from the [IEEE-CIS Fraud Detection Benchmark](https://www.kaggle.com/c/ieee-fraud-detection) (IEEE Computational Intelligence Society and Vesta Corporation). The [MIT License](LICENSE) covers project code. Raw IEEE-CIS data is not redistributed by this repository.
+
+## Container model delivery
+
+The image contains code and dependencies. Mount a trusted locally generated champion read-only at /app/artifacts/champion, matching FRAUDGUARD_ARTIFACT_DIR. The public source build does not depend on ignored artifacts. GitHub CI prepares a synthetic bundle solely for runtime smoke testing. That bundle is not the real IEEE-CIS champion. Render native-Python hosting needs an explicitly provided approved artifact before /ready can succeed; a blueprint alone is not deployment proof.

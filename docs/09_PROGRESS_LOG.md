@@ -275,3 +275,15 @@ Met/missed acceptance criteria: All 4 portfolio remediation review items complet
 
 
 
+
+
+## 6 October 2026: portfolio remediation execution
+
+Docker no longer copies ignored model artifacts. Existing read-only mount contract is used, with a non-root image and synthetic Docker scoring CI. Container contract regression passes and Ruff checks pass. Original IEEE-CIS models are untouched. Actual Docker/candidate CI/approved artifact hosting remain open.
+
+Evidence: local branch fix/portfolio-remediation; preserved originals and receipts under the workspace .portfolio-audit/2026-10-06/remediation folder. No remote push, merge, external post or cloud deployment was performed.
+
+
+### Container verification completed: 6 October 2026
+
+Linux image build, readiness and functional inference/reorder/recommendation passed. Only task-owned containers were removed; original mounts were read-only. This supersedes the earlier local-Docker pending note. Candidate GitHub execution and public hosting remain pending. Evidence: workspace .portfolio-audit/2026-10-06/remediation/docker.

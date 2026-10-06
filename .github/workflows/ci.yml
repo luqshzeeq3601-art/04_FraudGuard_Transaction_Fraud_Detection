@@ -45,3 +45,26 @@ jobs:
       - name: Run Pytest with Coverage
         run: |
           pytest -p no:cacheprovider --cov=fraudguard --cov-report=term-missing --cov-fail-under=80
+
+      - name: Build code-only container
+        run: docker build -t fraudguard:ci .
+
+      - name: Verify container with synthetic trusted bundle
+        run: |
+          chmod -R a+rX artifacts/champion
+          docker run -d --name fraudguard-ci -p 127.0.0.1:8000:8000 \
+            --mount type=bind,source="$PWD/artifacts/champion",target=/app/artifacts/champion,readonly \
+            fraudguard:ci
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8000/ready; then break; fi
+            sleep 2
+          done
+          curl --fail http://127.0.0.1:8000/ready
+          curl --fail -X POST http://127.0.0.1:8000/v1/score \
+            -H 'Content-Type: application/json' --data-binary @examples/synthetic_transaction.json
+
+      - name: Container logs and cleanup
+        if: always()
+        run: |
+          docker logs fraudguard-ci || true
+          docker rm -f fraudguard-ci || true
